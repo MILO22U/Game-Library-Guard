@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+**/__pycache__/
+native/host_chrome.json
+native/host_firefox.json
+native/launch_host.cmd
+node_modules/
+.claude/
+bridge-settings.json
+*.log

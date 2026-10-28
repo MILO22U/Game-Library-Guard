@@ -1,0 +1,112 @@
+{
+  "manifest_version": 3,
+  "name": "Game Library Guard",
+  "version": "1.0.0",
+  "description": "Local Playnite ownership, Xbox/Game Pass decisions, and opt-in Microsoft purchase verification.",
+  "permissions": [
+    "storage",
+    "nativeMessaging",
+    "alarms",
+    "activeTab",
+    "scripting",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "https://store.steampowered.com/*",
+    "https://www.gog.com/*",
+    "https://gog.com/*",
+    "https://store.epicgames.com/*",
+    "https://www.humblebundle.com/*",
+    "https://humblebundle.com/*",
+    "https://itch.io/*",
+    "https://*.itch.io/*",
+    "https://store.ubisoft.com/*",
+    "https://www.ea.com/*",
+    "https://ea.com/*",
+    "https://www.fanatical.com/*",
+    "https://www.indiegala.com/*",
+    "https://gamesplanet.com/*",
+    "https://*.gamesplanet.com/*",
+    "https://www.greenmangaming.com/*",
+    "https://www.gamersgate.com/*",
+    "https://www.gamebillet.com/*",
+    "https://gamebillet.com/*",
+    "https://www.xbox.com/*",
+    "https://www.2game.com/*",
+    "https://2game.com/*",
+    "https://www.nuuvem.com/*",
+    "https://www.wingamestore.com/*",
+    "https://apps.microsoft.com/*",
+    "https://shop.battle.net/*",
+    "https://*.shop.battle.net/*",
+    "https://www.dlgamer.com/*",
+    "https://dlgamer.com/*",
+    "https://www.voidu.com/*",
+    "https://www.allyouplay.com/*",
+    "https://allyouplay.com/*",
+    "https://www.macgamestore.com/*",
+    "https://www.gamesload.com/*",
+    "https://gamesload.com/*",
+    "https://www.dreamgame.com/*",
+    "https://gamejolt.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://store.steampowered.com/*",
+        "https://www.gog.com/*",
+        "https://gog.com/*",
+        "https://store.epicgames.com/*",
+        "https://www.humblebundle.com/*",
+        "https://humblebundle.com/*",
+        "https://itch.io/*",
+        "https://*.itch.io/*",
+        "https://store.ubisoft.com/*",
+        "https://www.ea.com/*",
+        "https://ea.com/*",
+        "https://www.fanatical.com/*",
+        "https://www.indiegala.com/*",
+        "https://gamesplanet.com/*",
+        "https://*.gamesplanet.com/*",
+        "https://www.greenmangaming.com/*",
+        "https://www.gamersgate.com/*",
+        "https://www.gamebillet.com/*",
+        "https://gamebillet.com/*",
+        "https://www.xbox.com/*",
+        "https://www.2game.com/*",
+        "https://2game.com/*",
+        "https://www.nuuvem.com/*",
+        "https://www.wingamestore.com/*",
+        "https://apps.microsoft.com/*",
+        "https://shop.battle.net/*",
+        "https://*.shop.battle.net/*",
+        "https://www.dlgamer.com/*",
+        "https://dlgamer.com/*",
+        "https://www.voidu.com/*",
+        "https://www.allyouplay.com/*",
+        "https://allyouplay.com/*",
+        "https://www.macgamestore.com/*",
+        "https://www.gamesload.com/*",
+        "https://gamesload.com/*",
+        "https://www.dreamgame.com/*",
+        "https://gamejolt.com/*"
+      ],
+      "js": [
+        "adapters.js",
+        "ownership.js",
+        "content-style.js",
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

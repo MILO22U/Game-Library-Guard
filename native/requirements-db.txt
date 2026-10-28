@@ -1,0 +1,1 @@
+# No Python LiteDB dependency. Build native/reader/PlayniteReader.csproj (.NET 10, pinned LiteDB 4.1.4).

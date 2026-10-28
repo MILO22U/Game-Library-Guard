@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Game Library Guard</title>
+  <link rel="stylesheet" href="../shared/popup.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand-icon" aria-hidden="true"><svg viewBox="0 0 32 36" fill="none"><path d="M16 2 29 7v10c0 8-7 13-13 17C10 30 3 25 3 17V7L16 2Z" stroke="currentColor" stroke-width="2"/><path d="M11 13h10l3 9-4 1-2-3h-4l-2 3-4-1 3-9Z" fill="currentColor"/><path d="M12 15v4m-2-2h4" stroke="#1764d9" stroke-width="1.5"/><circle cx="20" cy="16" r="1" fill="#1764d9"/></svg></div>
+    <div><h1>Game Library Guard</h1><p class="brand-caption">Your library. Across every store.</p></div>
+    <span class="local-tag"><span class="dot"></span> UI preview</span>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Extension sections">
+    <button id="tabDashboard" role="tab" aria-selected="true" aria-controls="panelDashboard" tabindex="0">Dashboard</button>
+    <button id="tabLibrary" role="tab" aria-selected="false" aria-controls="panelLibrary" tabindex="-1">My Library</button>
+    <button id="tabWishlist" role="tab" aria-selected="false" aria-controls="panelWishlist" tabindex="-1">Wishlist</button>
+    <button id="tabGamepass" role="tab" aria-selected="false" aria-controls="panelGamepass" tabindex="-1">Game Pass</button>
+    <button id="tabSettings" role="tab" aria-selected="false" aria-controls="panelSettings" tabindex="-1">Settings</button>
+  </nav>
+
+  <div class="connection-banner" id="connectionBanner">
+    <span class="connection-icon" aria-hidden="true"><span class="dot"></span></span>
+    <div class="connection-copy"><strong id="connectionTitle">Checking your library</strong><p id="status" role="status" aria-live="polite">Loading saved data...</p></div>
+    <button id="refresh" class="button-small">Refresh Library</button>
+  </div>
+  <p id="manualResult" class="feedback" role="status" aria-live="polite"></p>
+
+  <main id="appMain">
+    <section id="panelDashboard" role="tabpanel" aria-labelledby="tabDashboard">
+      <div class="section-heading"><div><span class="eyebrow">OVERVIEW</span><h2>A little more peace of mind.</h2></div></div>
+      <div class="stats" aria-label="Library overview">
+        <div class="stat"><span class="stat-symbol neutral" aria-hidden="true">&#9638;</span><strong id="statTotal">0</strong><span>Library records</span></div>
+        <div class="stat"><span class="stat-symbol red" aria-hidden="true">&#10003;</span><strong id="statOwned">0</strong><span>Owned*</span></div>
+        <div class="stat"><span class="stat-symbol amber" aria-hidden="true">&#9672;</span><strong id="statPass">0</strong><span>Game Pass</span></div>
+        <div class="stat"><span class="stat-symbol blue" aria-hidden="true">&#9825;</span><strong id="statWishlist">0</strong><span>Wishlist</span></div>
+      </div>
+      <p class="microcopy">*Based on library sources and your purchase choices, not independent license verification.</p>
+      <div class="section-heading compact"><h2>Bring your library together</h2><span class="subtle">Private by default</span></div>
+      <div class="actions">
+        <button id="importFile" class="action-card"><span class="action-icon purple" aria-hidden="true">&#8593;</span><strong>Import JSON / CSV</strong><span>Choose a local file</span></button>
+        <button id="connectPlaynite" class="action-card"><span class="action-icon green" aria-hidden="true">&#8644;</span><strong>Connect Playnite</strong><span>Sync your games.db</span></button>
+        <button id="viewImported" class="action-card"><span class="action-icon blue" aria-hidden="true">&#9776;</span><strong>View Imported Games</strong><span>Search manual imports</span></button>
+      </div>
+      <div id="manualControls"><input id="libraryFile" type="file" accept=".json,.csv,application/json,text/csv" hidden></div>
+      <details id="connectionSetup" class="card">
+        <summary><span>Playnite connection setup</span><span class="subtle">Standard or portable</span></summary>
+        <div id="autoControls" class="details-body">
+          <label for="playniteBackend">Connection method</label>
+          <select id="playniteBackend"><option value="db">Direct games.db (close Playnite first)</option><option value="sdk">SDK exporter (updates while Playnite runs)</option></select>
+          <label for="dbPath">games.db location <span class="subtle">Optional for standard installs</span></label>
+          <input id="dbPath" type="text" placeholder="Blank: detect your installed Playnite library">
+          <p class="help-text">For portable Playnite, enter the full path to games.db. Keep sources.db in the same folder. The local native bridge is required.</p>
+          <button id="saveDbPath" class="primary">Save connection and sync</button>
+        </div>
+      </details>
+      <details class="help-details"><summary>Where is my Playnite library?</summary><p>Standard installations usually use:</p><code>%APPDATA%\Playnite\library\games.db</code><p>Portable installs keep the library in their own folder. Direct mode reads protected copies and never modifies either database. If Playnite locks them, close it or use the optional SDK exporter. Follow the project's README to install the local bridge.</p></details>
+      <div class="legend"><span><i class="red-dot"></i>Owned</span><span><i class="blue-dot"></i>Wishlist</span><span><i class="amber-dot"></i>Game Pass</span><span>25% default tint</span></div>
+    </section>
+
+    <section id="panelLibrary" role="tabpanel" aria-labelledby="tabLibrary" hidden>
+      <div class="section-heading"><div><span class="eyebrow">YOUR COLLECTION</span><h2>My Game Library</h2></div><button id="viewAllGames" class="button-small">Show all</button></div>
+      <p id="libraryScope" class="scope-label">Manual + Playnite records</p>
+      <div class="search-row"><input id="searchOwned" type="search" placeholder="Search titles or libraries" aria-label="Search imported games"><select id="sourceFilter" aria-label="Filter by source"><option value="">All sources</option></select></div>
+      <p id="librarySummary" class="help-text"></p>
+      <div id="ownedList" class="game-list" role="list"></div>
+      <p id="syncDetail" class="help-text">No successful sync yet.</p>
+      <details class="card manage-import"><summary>Manage manual imports</summary><div class="details-body"><p class="help-text">Import another JSON / CSV file from the Dashboard to replace the manual library. Playnite data stays separate.</p><button id="removeImported" class="danger">Remove Imported Library</button></div></details>
+    </section>
+
+    <section id="panelWishlist" role="tabpanel" aria-labelledby="tabWishlist" hidden>
+      <div class="section-heading"><div><span class="eyebrow blue">SOMETHING TO LOOK FORWARD TO</span><h2>Your wishlist</h2></div><span class="section-token blue">&#9825;</span></div>
+      <p class="help-text">Keep a local list of games you're watching. They appear in blue while you browse.</p>
+      <div class="card form-card"><label for="wishName">Game title</label><input id="wishName" type="text" placeholder="What would you like to play?"><label for="wishSource">Wishlist source</label><div class="row"><input id="wishSource" type="text" placeholder="Steam, GOG, Epic..." value="Steam"><button id="addWish" class="primary">Add title</button></div></div>
+      <ul id="wishes" class="wishlist-list"></ul><p class="help-text">Owned games take priority over wishlist entries. Your wishlist stays in this browser.</p>
+    </section>
+
+    <section id="panelGamepass" role="tabpanel" aria-labelledby="tabGamepass" hidden>
+      <div class="section-heading"><div><span class="eyebrow amber">PLAY IT YOUR WAY</span><h2>Xbox &amp; Game Pass</h2></div><span class="section-token amber">&#9672;</span></div>
+      <p class="help-text">A subscription is different from a purchase. Set access, progress, and whether you'd like to buy a game.</p>
+      <input id="passSearch" type="search" placeholder="Find an Xbox or Microsoft game" aria-label="Search Xbox and Microsoft games">
+      <div id="passGames" class="pass-list"></div>
+      <div id="passEditor" class="card form-card" hidden><strong id="passSelected"></strong><label for="passAccess">Access &amp; purchase interest</label><select id="passAccess"><option value="unknown">Unverified, don't say owned</option><option value="owned">Purchased / permanently owned</option><option value="gamepass">Game Pass access only, still deciding</option><option value="done">Done with Game Pass, not interested in buying</option><option value="want">Played on Game Pass, want to buy permanently</option></select><label for="passProgress">Progress</label><select id="passProgress"><option value="not_started">Not started</option><option value="playing">Played, not completed</option><option value="completed">Completed</option></select><div class="button-row"><button id="savePass" class="primary">Save status</button><button id="clearPass">Reset</button></div></div>
+      <div class="notice"><strong>Your choice, clearly marked.</strong><p>Amber means Game Pass access. Blue means want to own. Red "Done" means done playing and not buying; it does not mean purchased.</p></div>
+      <details class="card purchase-section"><summary>Confirm Microsoft purchases<span class="subtle">Optional</span></summary><div class="details-body"><strong>Microsoft purchase verification (optional)</strong><p><small>Open Microsoft order history yourself. Confirm Completed or Redeemed GAME purchases (not Game Pass, add-ons, refunds or trials). Highlight only the GAME TITLES on that page. The extension only reads text you deliberately select after pressing Capture. No invoices, payments, cookies or passwords are collected.</small></p><button id="openOrders">Open Microsoft order history</button> <button id="captureOrders">Capture selected titles</button><p id="purchaseMessage" role="status"><small>Nothing is checked until you choose Capture or enter titles manually.</small></p><label>Review game titles (one per line)<textarea id="purchaseTitles" rows="4" maxlength="16000" placeholder="Dino Crisis&#10;Example Game"></textarea></label><label><input type="checkbox" id="purchaseConfirm"> I checked these entries on Microsoft order history and confirm they are permanent game purchases or redeemed game licenses, not Game Pass, subscriptions, trials, refunded orders or DLC.</label><button id="savePurchases">Add verified purchases</button><div id="verifiedPurchases"></div><p><small>Review and remove records at any time. Verification is user-confirmed, not an official Microsoft entitlement API. A later Playnite refresh will not erase your verified records. Matching is by exact normalized title and may confuse editions.</small></p></div></details>
+    </section>
+
+    <section id="panelSettings" role="tabpanel" aria-labelledby="tabSettings" hidden>
+      <div class="section-heading"><div><span class="eyebrow">MAKE IT YOURS</span><h2>Display &amp; sync</h2></div></div>
+      <div class="card form-card"><h3>Storefront badges</h3><label class="toggle-row"><span><strong>Ownership badges</strong><small>Red badges show the source library</small></span><input id="enabled" type="checkbox" role="switch"></label><label class="toggle-row"><span><strong>Wishlist badges</strong><small>Blue badges for games you're watching</small></span><input id="wishlistEnabled" type="checkbox" role="switch"></label><label for="opacity" class="range-label">Artwork tint <span><span id="pct">25</span>%</span></label><input id="opacity" type="range" min="0" max="70" step="5"><p class="help-text">Default 25%. Artwork, prices, and store links stay accessible.</p></div>
+      <div class="card form-card"><h3>Library updates</h3><label class="radio-row"><input type="radio" name="importMode" id="modeAuto" value="auto"><span><strong>Automatic Playnite connection</strong><small>Check when the popup opens and about once a minute</small></span></label><label class="radio-row"><input type="radio" name="importMode" id="modeManual" value="manual"><span><strong>Manual file import</strong><small>Choose a file; pause Playnite checks</small></span></label><p class="help-text">Both libraries remain stored separately when you switch modes.</p></div>
+      <div class="notice"><strong>Stays on your computer</strong><p>Your library, wishlist, and choices are stored locally. No cloud account or store credentials required.</p></div>
+    </section>
+  </main>
+  <footer><span class="dot"></span> Local library protection <span>v1.0</span></footer>
+  <script src="popup-preview.js"></script><script src="../shared/library.js"></script>
+  <script src="../shared/popup.js"></script>
+</body>
+</html>
